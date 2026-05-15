@@ -3,7 +3,7 @@ const registerFeedback = document.getElementById("registerFeedback");
 const usuarioLogado = JSON.parse(sessionStorage.getItem("farmaeduk_usuario") || "{}");
 const token = sessionStorage.getItem("farmaeduk_token") || "";
 
-if (!["admin", "master"].includes(usuarioLogado.perfil)) {
+if (!["admin", "master", "professor"].includes(usuarioLogado.perfil)) {
   window.location.href = sessionStorage.getItem("farmaeduk_autenticado") === "true" ? "/filtros" : "/login-admin";
 }
 
@@ -31,11 +31,12 @@ registerForm.addEventListener("submit", async (event) => {
   registerFeedback.textContent = "";
   registerFeedback.classList.remove("success");
 
-  const nome = document.getElementById("registerNome").value.trim();
+  const nome = document.getElementById("registerNomeAluno").value.trim();
+  const nomeUsuario = document.getElementById("registerNome").value.trim();
   const senha = document.getElementById("registerSenha").value;
 
   try {
-    const result = await sendJson("/api/register", { nome, senha });
+    const result = await sendJson("/api/register", { nome, nome_usuario: nomeUsuario, senha });
     registerFeedback.classList.add("success");
     registerFeedback.textContent = result.mensagem || "Usuario cadastrado";
     registerForm.reset();

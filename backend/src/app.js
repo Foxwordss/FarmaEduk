@@ -6,8 +6,13 @@ import { fileURLToPath } from 'url';
 import {
   atualizarMedicamento,
   cadastrarMedicamento,
+  excluirMedicamento,
   inativarMedicamento,
   listarMedicamentos,
+  listarRetiradas,
+  listarSaldosAlunos,
+  obterResumoFarmCoins,
+  retirarFarmCoins,
 } from './controllers/medicamentoController.js';
 import { autenticar, exigirProfessor, listarAlunos, login } from './controllers/authController.js';
 import authRoutes from './routes/authRoutes.js';
@@ -54,6 +59,14 @@ app.get('/filtros', (req, res) => {
   res.sendFile(path.join(frontendRoot, 'html', 'filtros.html'));
 });
 
+app.get('/excluir-medicamentos', (req, res) => {
+  res.sendFile(path.join(frontendRoot, 'html', 'excluir-medicamentos.html'));
+});
+
+app.get('/saldo-total', (req, res) => {
+  res.sendFile(path.join(frontendRoot, 'html', 'saldo-total.html'));
+});
+
 app.use('/api', authRoutes);
 app.post('/auth/login', login);
 app.get('/api/alunos', autenticar, exigirProfessor, listarAlunos);
@@ -67,8 +80,13 @@ app.get('/api/medicamentos', listarMedicamentos);
 app.get('/api/medicamento', listarMedicamentos);
 app.get('/api/medicacoes', autenticar, listarMedicamentos);
 app.get('/medicacoes', autenticar, listarMedicamentos);
-app.put('/api/medicamentos/:id', atualizarMedicamento);
-app.patch('/api/medicamentos/:id/inativar', inativarMedicamento);
+app.get('/api/farmcoins/resumo', autenticar, exigirProfessor, obterResumoFarmCoins);
+app.get('/api/farmcoins/saldos', autenticar, exigirProfessor, listarSaldosAlunos);
+app.get('/api/farmcoins/retiradas', autenticar, listarRetiradas);
+app.post('/api/farmcoins/retiradas', autenticar, exigirProfessor, retirarFarmCoins);
+app.put('/api/medicamentos/:id', autenticar, exigirProfessor, atualizarMedicamento);
+app.patch('/api/medicamentos/:id/inativar', autenticar, exigirProfessor, inativarMedicamento);
+app.delete('/api/medicamentos/:id', autenticar, exigirProfessor, excluirMedicamento);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });

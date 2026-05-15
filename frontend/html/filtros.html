@@ -4,19 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FarmaEduk - Filtros</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="app-page">
     <main class="dashboard">
         <section class="hero-panel">
             <div>
-                <span class="brand-pill">FarmaEduK</span>
-                <h1>Filtragem de registros</h1>
-                <p>Localize entregas registradas por aluno, principio ativo e periodo de entrega.</p>
+                <a class="brand-pill" href="/medicamentos" aria-label="Atualizar painel FarmaEduk">
+                    <span class="brand-cross" aria-hidden="true"></span>
+                    <span>FarmaEduk</span>
+                </a>
             </div>
-            <aside class="rule-card">
-                <span>Consulta</span>
-                <strong id="resultado-destaque">0<br>registro(s)</strong>
+            <aside class="hero-actions">
+                <a id="voltar-admin" class="header-action-button" href="/medicamentos" title="Voltar ao painel" aria-label="Voltar ao painel">
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+                </a>
+                <button id="sair-sessao" class="header-action-button danger-header-action" type="button" title="Sair" aria-label="Sair">
+                    <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+                </button>
             </aside>
         </section>
 
@@ -38,10 +44,6 @@
         <section class="panel">
             <div class="panel-title">
                 <h2>Filtros de consulta</h2>
-                <div class="button-row">
-                    <a id="voltar-admin" class="btn-secondary link-button" href="/medicamentos">Voltar</a>
-                    <button id="sair-sessao" class="btn-secondary" type="button">Sair</button>
-                </div>
             </div>
 
             <form id="filter-form" class="filter-grid">
@@ -59,6 +61,16 @@
                     <option value="">Todos os alunos cadastrados</option>
                 </select>
                 <input id="filtro-aluno" class="input" type="text" placeholder="Nome do aluno" readonly>
+
+                <label class="input-field" for="filtro-tipo">
+                    <span>Tipo</span>
+                    <select id="filtro-tipo" class="input">
+                        <option value="">Todos os registros</option>
+                        <option value="ENTRADA">Entradas</option>
+                        <option value="SAIDA">Saídas</option>
+                    </select>
+                </label>
+
                 <input id="filtro-principio" class="input" type="text" placeholder="Principio ativo">
 
                 <button class="btn-submit" type="submit">Filtrar</button>

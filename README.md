@@ -4,14 +4,14 @@ Sistema academico para registrar entregas de medicamentos vencidos realizadas po
 
 O professor cadastra alunos, registra as entregas de medicamentos e acompanha os creditos gerados. O aluno acessa o sistema apenas para consultar os registros vinculados ao seu usuario.
 
-Importante: o sistema nao utiliza email nem RA. O aluno e identificado pelo cadastro na tabela `usuario`, usando `id_usuario`, `nome`, `senha`, `tipo_usuario` e `ativo`.
+Importante: o sistema nao utiliza email nem RA. O aluno e identificado pelo cadastro na tabela `usuario`, usando `id_usuario`, `nome`, `nome_usuario`, `senha`, `tipo_usuario` e `ativo`. O campo `nome_usuario` e usado no login; o campo `nome` e o nome do aluno exibido nas entregas.
 
 ## Funcionalidades
 
 - Login separado para professor e aluno.
-- Cadastro de alunos pelo professor.
+- Cadastro de alunos pelo professor com nome do aluno e nome de usuario para login.
 - Registro de entrega de medicamento para aluno ja cadastrado.
-- Vinculo da entrega ao aluno por `id_usuario`.
+- Vinculo da entrega ao aluno por `id_usuario`, selecionando pelo nome do aluno.
 - Registro de principio ativo, data de entrega, validade e quantidade.
 - Calculo de FarmaCoins: cada caixa gera 25 FarmaCoins.
 - Listagem, edicao e inativacao de entregas.
@@ -87,7 +87,7 @@ Essas senhas devem ser alteradas em um ambiente real.
 ## Fluxo Principal
 
 1. Professor acessa `/login-admin`.
-2. Professor cadastra um aluno em `/cadastro`.
+2. Professor cadastra um aluno em `/cadastro`, informando o nome do aluno, nome de usuario e senha.
 3. Professor registra uma entrega em `/medicamentos`, selecionando o aluno cadastrado.
 4. O sistema grava o medicamento e uma movimentacao de FarmaCoins.
 5. Aluno acessa `/login-aluno`.
@@ -101,6 +101,7 @@ O banco oficial possui somente estas tabelas:
 usuario
 - id_usuario
 - nome
+- nome_usuario
 - senha
 - tipo_usuario
 - ativo

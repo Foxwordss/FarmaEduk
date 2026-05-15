@@ -85,6 +85,7 @@ function assinarToken(usuario) {
     const payload = base64Url(JSON.stringify({
         sub: usuario.id,
         nome: usuario.nome,
+        nome_usuario: usuario.nome_usuario,
         perfil: usuario.perfil,
         tipo_usuario: usuario.tipo_usuario,
         iat: agora,
@@ -163,28 +164,29 @@ async function register(req, res) {
         }
 
         const body = req.body ?? {};
-        const nome = obterCampo(body, ['nome', 'Nome', 'usuario', 'Usuario', 'username']);
+        const nome = obterCampo(body, ['nome', 'Nome', 'nome_aluno', 'nomeAluno']);
+        const nomeUsuario = obterCampo(body, ['nome_usuario', 'nomeUsuario', 'usuario', 'Usuario', 'username']);
         const senha = obterCampo(body, ['senha', 'Senha', 'password']);
 
-        if (!nome || !senha) {
-            return res.status(400).json({ erro: 'Nome e senha sao obrigatorios' });
+        if (!nome || !nomeUsuario || !senha) {
+            return res.status(400).json({ erro: 'Nome do aluno, nome de usuario e senha sao obrigatorios' });
         }
 
         const usuarioExiste = await pool.query(
-            'SELECT id_usuario AS id FROM usuario WHERE LOWER(nome) = LOWER($1) LIMIT 1;',
-            [nome],
+            'SELECT id_usuario AS id FROM usuario WHERE LOWER(nome_usuario) = LOWER($1) LIMIT 1;',
+            [nomeUsuario],
         );
 
         if (usuarioExiste.rows.length > 0) {
-            return res.status(409).json({ erro: 'Usuario ja cadastrado' });
+            return res.status(409).json({ erro: 'Nome de usuario ja cadastrado' });
         }
 
         const senhaCriptografada = await hashSenha(senha);
         const resultado = await pool.query(
-            `INSERT INTO usuario (nome, senha, tipo_usuario, ativo)
-             VALUES ($1, $2, 'ALUNO', TRUE)
-             RETURNING id_usuario AS id, nome, tipo_usuario, ativo;`,
-            [nome, senhaCriptografada],
+            `INSERT INTO usuario (nome, nome_usuario, senha, tipo_usuario, ativo)
+             VALUES ($1, $2, $3, 'ALUNO', TRUE)
+             RETURNING id_usuario AS id, nome, nome_usuario, tipo_usuario, ativo;`,
+            [nome, nomeUsuario, senhaCriptografada],
         );
 
         await pool.query(
@@ -222,9 +224,10 @@ async function login(req, res) {
         }
 
         const resultado = await pool.query(
-            `SELECT id_usuario AS id, nome, senha, tipo_usuario
+            `SELECT id_usuario AS id, nome, nome_usuario, senha, tipo_usuario
              FROM usuario
-             WHERE LOWER(nome) = LOWER($1)
+             WHERE LOWER(nome_usuario) = LOWER($1)
+                OR LOWER(nome) = LOWER($1)
              LIMIT 1;`,
             [identificador],
         );
@@ -253,6 +256,7 @@ async function login(req, res) {
             usuario: {
                 id: usuario.id,
                 nome: usuario.nome,
+                nome_usuario: usuario.nome_usuario,
                 perfil: usuario.perfil,
                 tipo_usuario: usuario.tipo_usuario,
             },
@@ -266,7 +270,7 @@ async function login(req, res) {
 async function listarAlunos(req, res) {
     try {
         const resultado = await pool.query(
-            `SELECT id_usuario AS id, nome
+            `SELECT id_usuario AS id, nome, nome_usuario
              FROM usuario
              WHERE tipo_usuario = 'ALUNO'
                AND ativo = TRUE

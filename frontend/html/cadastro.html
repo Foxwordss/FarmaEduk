@@ -21,10 +21,24 @@
       <section class="auth-form">
         <div class="form-header">
           <h1 class="form-title">Criar Conta</h1>
-          <p class="form-subtitle">cadastre o aluno com nome de usuario e senha</p>
+          <p class="form-subtitle">cadastre o nome do aluno e o usuario de acesso</p>
         </div>
 
         <form id="registerForm">
+          <div class="form-group">
+            <div class="input-wrapper">
+              <span class="material-symbols-outlined input-icon">badge</span>
+              <input
+                type="text"
+                id="registerNomeAluno"
+                class="form-input"
+                placeholder="Nome do aluno"
+                autocomplete="name"
+                required
+              />
+            </div>
+          </div>
+
           <div class="form-group">
             <div class="input-wrapper">
               <span class="material-symbols-outlined input-icon">person</span>
@@ -32,7 +46,7 @@
                 type="text"
                 id="registerNome"
                 class="form-input"
-                placeholder="Nome de Usuario"
+                placeholder="Nome de usuario para login"
                 autocomplete="username"
                 required
               />
@@ -56,15 +70,13 @@
           <p id="registerFeedback" class="feedback" role="alert"></p>
           <button type="submit" class="submit-button">CADASTRAR</button>
         </form>
- <section class="panel">
-            <div class="panel-title">
-                <div class="button-row">
-                <div class="actions-secondary">
-  <a href="/medicamentos" class="btn-action">Voltar</a>
-  <a href="/login" class="btn-action">Sair</a>
-</div>
-                </div>
-            </div>
+
+        <div class="actions-secondary">
+          <a href="/medicamentos" class="btn-action">Voltar</a>
+          <a href="/login" class="btn-action">Sair</a>
+        </div>
+      </section>
+    </main>
 
     <script src="/js/script-cadastro.js"></script>
   </body>

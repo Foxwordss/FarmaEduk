@@ -11,7 +11,6 @@ const form = document.getElementById("filter-form");
 const limparFiltros = document.getElementById("limpar-filtros");
 const lista = document.getElementById("lista-filtros");
 const total = document.getElementById("resultado-total");
-const destaque = document.getElementById("resultado-destaque");
 const registrosTotal = document.getElementById("registros-total");
 const caixasTotal = document.getElementById("caixas-total");
 const coinsTotal = document.getElementById("coins-total");
@@ -20,6 +19,7 @@ const filtroInicio = document.getElementById("filtro-inicio");
 const filtroFim = document.getElementById("filtro-fim");
 const filtroAlunoSelect = document.getElementById("filtro-aluno-select");
 const filtroAluno = document.getElementById("filtro-aluno");
+const filtroTipo = document.getElementById("filtro-tipo");
 const filtroPrincipio = document.getElementById("filtro-principio");
 const voltarAdmin = document.getElementById("voltar-admin");
 const sairSessao = document.getElementById("sair-sessao");
@@ -40,32 +40,55 @@ function dadosDaDescricao(descricao) {
 
 function formatarData(data) {
   if (!data) return "Sem data";
-  return new Date(`${data}T00:00:00`).toLocaleDateString("pt-BR");
+  const dataNormalizada = String(data).slice(0, 10);
+  const dataFormatada = new Date(`${dataNormalizada}T00:00:00`);
+  return Number.isNaN(dataFormatada.getTime()) ? "Sem data" : dataFormatada.toLocaleDateString("pt-BR");
 }
 
 function getAluno(registro) {
+  if (registro.tipo_registro === "RETIRADA") return registro.aluno || "Aluno nao informado";
   const dados = dadosDaDescricao(registro.descricao);
   return registro.nome_doador || dados.doador || dados.aluno || "Doador nao informado";
 }
 
 function getEntrega(registro) {
-  return dadosDaDescricao(registro.descricao).entrega || "";
+  if (registro.tipo_registro === "RETIRADA") return registro.data || "";
+  return String(registro.data_entrega || "").slice(0, 10) || dadosDaDescricao(registro.descricao).entrega || "";
 }
 
 function getCaixas(registro) {
+  if (registro.tipo_registro === "RETIRADA") return 0;
   return Number(registro.quantidade || dadosDaDescricao(registro.descricao).caixas || 1);
 }
 
 function getValidade(registro) {
+  if (registro.tipo_registro === "RETIRADA") return "";
   return registro.validade ? String(registro.validade).slice(0, 10) : dadosDaDescricao(registro.descricao).vencimento || "";
+}
+
+function getFarmCoins(registro) {
+  if (registro.tipo_registro === "RETIRADA") return -Number(registro.valor || 0);
+  const caixas = getCaixas(registro);
+  return Number(registro.farmcoins_creditados || caixas * FARMACOINS_POR_CAIXA);
+}
+
+function getTitulo(registro) {
+  return registro.tipo_registro === "RETIRADA" ? "Retirada de FARMACOINS" : registro.nome;
+}
+
+function getDetalhe(registro) {
+  if (registro.tipo_registro === "RETIRADA") {
+    return registro.motivo || "Retirada sem motivo informado";
+  }
+
+  return `${getCaixas(registro)} caixa(s)`;
 }
 
 function renderizar(listaFiltrada) {
   const caixas = listaFiltrada.reduce((soma, registro) => soma + getCaixas(registro), 0);
-  const farmacoins = caixas * FARMACOINS_POR_CAIXA;
+  const farmacoins = listaFiltrada.reduce((soma, registro) => soma + getFarmCoins(registro), 0);
 
   total.textContent = `${listaFiltrada.length} registro(s)`;
-  destaque.innerHTML = `${listaFiltrada.length}<br>registro(s)`;
   registrosTotal.textContent = listaFiltrada.length;
   caixasTotal.textContent = caixas;
   coinsTotal.textContent = `${farmacoins} FC`;
@@ -76,17 +99,17 @@ function renderizar(listaFiltrada) {
   }
 
   lista.innerHTML = listaFiltrada.map((registro) => {
-    const caixas = getCaixas(registro);
+    const farmcoinsRegistro = getFarmCoins(registro);
+    const validade = getValidade(registro);
 
     return `
-      <article class="medicine-item">
+      <article class="medicine-item ${registro.tipo_registro === "RETIRADA" ? "danger-item" : ""}">
         <div>
           <strong>${getAluno(registro)}</strong>
-          <span>${registro.nome} - ${caixas} caixa(s)</span>
-          <small>Entrega: ${formatarData(getEntrega(registro))}</small>
+          <span>${getTitulo(registro)} - ${getDetalhe(registro)}</span>
+          <small>${registro.tipo_registro === "RETIRADA" ? "Retirada" : "Entrega"}: ${formatarData(getEntrega(registro))}${validade ? ` | Validade: ${formatarData(validade)}` : ""}</small>
         </div>
-        <small>Validade: ${formatarData(getValidade(registro))}</small>
-        <b>${Number(registro.farmcoins_creditados || caixas * FARMACOINS_POR_CAIXA)} FC</b>
+        <b>${farmcoinsRegistro > 0 ? "+" : ""}${farmcoinsRegistro} FC</b>
       </article>
     `;
   }).join("");
@@ -130,6 +153,7 @@ async function carregarAlunos() {
 function aplicarFiltros() {
   const dataInicio = filtroInicio.value;
   const dataFim = filtroFim.value;
+  const tipo = filtroTipo.value;
   const aluno = isAdmin ? filtroAluno.value.trim().toLowerCase() : "";
   const principio = filtroPrincipio.value.trim().toLowerCase();
 
@@ -143,12 +167,14 @@ function aplicarFiltros() {
   const filtrados = registros.filter((registro) => {
     const alunoRegistro = getAluno(registro).toLowerCase();
     const entrega = getEntrega(registro);
-    const principioRegistro = String(registro.nome || "").toLowerCase();
+    const principioRegistro = `${getTitulo(registro)} ${registro.motivo || ""}`.toLowerCase();
+    const registroTipo = registro.tipo_registro === "RETIRADA" ? "SAIDA" : "ENTRADA";
 
     return (!dataInicio || entrega >= dataInicio)
       && (!dataFim || entrega <= dataFim)
       && (!aluno || alunoRegistro.includes(aluno))
-      && (!principio || principioRegistro.includes(principio));
+      && (!principio || principioRegistro.includes(principio))
+      && (!tipo || registroTipo === tipo);
   });
 
   renderizar(filtrados);
@@ -156,19 +182,31 @@ function aplicarFiltros() {
 
 async function carregarRegistros() {
   try {
-    const resposta = await fetch("/api/medicacoes", {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "X-User-Perfil": usuarioLogado.perfil || "",
-      },
-    });
+    const headers = {
+      "Authorization": `Bearer ${token}`,
+      "X-User-Perfil": usuarioLogado.perfil || "",
+    };
+    const alunoSelecionado = isAdmin && filtroAlunoSelect.value ? `?id_aluno=${encodeURIComponent(filtroAlunoSelect.value)}` : "";
+    const [resposta, respostaRetiradas] = await Promise.all([
+      fetch(`/api/medicacoes${alunoSelecionado}`, { headers }),
+      fetch(`/api/farmcoins/retiradas${alunoSelecionado}`, { headers }),
+    ]);
 
     if (!resposta.ok) {
       const erro = await resposta.json().catch(() => ({}));
       throw new Error(erro.erro || "Nao foi possivel carregar os registros.");
     }
 
-    registros = await resposta.json();
+    if (!respostaRetiradas.ok) {
+      const erro = await respostaRetiradas.json().catch(() => ({}));
+      throw new Error(erro.erro || "Nao foi possivel carregar as retiradas.");
+    }
+
+    const entregas = (await resposta.json()).map((registro) => ({ ...registro, tipo_registro: "ENTREGA" }));
+    const dadosRetiradas = await respostaRetiradas.json();
+    const retiradas = (dadosRetiradas.retiradas || []).map((registro) => ({ ...registro, tipo_registro: "RETIRADA" }));
+
+    registros = [...entregas, ...retiradas].sort((a, b) => String(getEntrega(b)).localeCompare(String(getEntrega(a))));
     renderizar(registros);
   } catch (error) {
     filtroFeedback.textContent = error.message;

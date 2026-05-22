@@ -22,6 +22,15 @@ dist/
 build/
 coverage/
 
+# Private notes, reports, and test/security docs
+*.md
+!README.md
+
+# Local security/test artifacts
+sql-injection-tests.js
+backend/src/test*.sql
+backend/src/*.backup
+
 # Local databases and generated data
 *.db
 *.sqlite

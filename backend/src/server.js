@@ -1,6 +1,6 @@
 import { createServer } from 'http';
-const { default: app } = await import('./backend/src/app.js');
-import initDatabase from './backend/src/initDb.js';
+import app from './app.js';
+import initDatabase from './initDb.js';
 
 const server = createServer(app);
 

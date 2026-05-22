@@ -48,5 +48,7 @@ tmp/
 temp/
 *.tmp
 
-# Local Netlify folder
+# Netlify files
 .netlify
+netlify/
+netlify.toml

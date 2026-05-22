@@ -70,6 +70,38 @@ O sistema ficara disponivel em:
 http://localhost:3000
 ```
 
+## Deploy na Vercel
+
+O projeto esta configurado para Vercel com `vercel.json`, arquivos estaticos em `public/` e a Function `api/[...path].js`.
+
+1. Suba este repositorio para o GitHub.
+2. Na Vercel, importe o repositorio.
+3. Deixe o framework como `Other`.
+4. Nao configure build command.
+5. Configure as variaveis de ambiente:
+
+```env
+DATABASE_URL=postgresql://usuario:senha@host:porta/banco?sslmode=require
+JWT_SECRET=troque-por-um-segredo-forte
+```
+
+6. Faca o deploy.
+7. Teste a API:
+
+```txt
+https://seu-projeto.vercel.app/health
+```
+
+Resposta esperada:
+
+```json
+{
+  "status": "ok"
+}
+```
+
+Antes do primeiro uso em producao, inicialize o banco com `npm run init-db` apontando para o `DATABASE_URL` remoto.
+
 ## Acessos Iniciais
 
 O script de banco cria usuarios administrativos quando eles ainda nao existem:

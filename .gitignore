@@ -52,3 +52,6 @@ temp/
 .netlify
 netlify/
 netlify.toml
+
+# Vercel files
+.vercel

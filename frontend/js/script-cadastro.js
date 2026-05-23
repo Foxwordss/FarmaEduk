@@ -2,8 +2,9 @@ const registerForm = document.getElementById("registerForm");
 const registerFeedback = document.getElementById("registerFeedback");
 const usuarioLogado = JSON.parse(sessionStorage.getItem("farmaeduk_usuario") || "{}");
 const token = sessionStorage.getItem("farmaeduk_token") || "";
+const perfilUsuario = String(usuarioLogado.perfil || usuarioLogado.tipo_usuario || "").toLowerCase();
 
-if (!["admin", "master", "professor"].includes(usuarioLogado.perfil)) {
+if (!["admin", "master", "professor"].includes(perfilUsuario)) {
   window.location.href = sessionStorage.getItem("farmaeduk_autenticado") === "true" ? "/filtros" : "/login-admin";
 }
 
@@ -13,7 +14,7 @@ async function sendJson(url, data) {
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`,
-      "X-User-Perfil": usuarioLogado.perfil || "",
+      "X-User-Perfil": perfilUsuario,
     },
     body: JSON.stringify(data),
   });

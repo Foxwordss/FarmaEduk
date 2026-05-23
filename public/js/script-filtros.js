@@ -4,7 +4,8 @@ if (sessionStorage.getItem("farmaeduk_autenticado") !== "true") {
 
 const usuarioLogado = JSON.parse(sessionStorage.getItem("farmaeduk_usuario") || "{}");
 const token = sessionStorage.getItem("farmaeduk_token") || "";
-const isAdmin = ["admin", "master"].includes(usuarioLogado.perfil);
+const perfilUsuario = String(usuarioLogado.perfil || usuarioLogado.tipo_usuario || "").toLowerCase();
+const isAdmin = ["admin", "master", "professor"].includes(perfilUsuario);
 
 const FARMACOINS_POR_CAIXA = 25;
 const form = document.getElementById("filter-form");
@@ -134,7 +135,7 @@ async function carregarAlunos() {
     const resposta = await fetch("/api/alunos", {
       headers: {
         "Authorization": `Bearer ${token}`,
-        "X-User-Perfil": usuarioLogado.perfil || "",
+        "X-User-Perfil": perfilUsuario,
       },
     });
 
@@ -184,7 +185,7 @@ async function carregarRegistros() {
   try {
     const headers = {
       "Authorization": `Bearer ${token}`,
-      "X-User-Perfil": usuarioLogado.perfil || "",
+      "X-User-Perfil": perfilUsuario,
     };
     const alunoSelecionado = isAdmin && filtroAlunoSelect.value ? `?id_aluno=${encodeURIComponent(filtroAlunoSelect.value)}` : "";
     const [resposta, respostaRetiradas] = await Promise.all([

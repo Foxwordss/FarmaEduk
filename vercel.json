@@ -1,6 +1,9 @@
 {
   "version": 2,
   "functions": {
+    "api/ping.js": {
+      "maxDuration": 5
+    },
     "api/health.js": {
       "maxDuration": 5
     },
@@ -26,7 +29,7 @@
     },
     {
       "source": "/health",
-      "destination": "/api/health"
+      "destination": "/api/ping"
     },
     {
       "source": "/login",

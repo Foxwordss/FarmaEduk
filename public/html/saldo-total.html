@@ -61,7 +61,8 @@
 
         const usuarioLogado = JSON.parse(sessionStorage.getItem('farmaeduk_usuario') || '{}');
         const token = sessionStorage.getItem('farmaeduk_token') || '';
-        const isAdmin = ['admin', 'master'].includes(usuarioLogado.perfil);
+        const perfilUsuario = String(usuarioLogado.perfil || usuarioLogado.tipo_usuario || '').toLowerCase();
+        const isAdmin = ['admin', 'master', 'professor'].includes(perfilUsuario);
 
         if (!isAdmin) {
             window.location.href = '/filtros';

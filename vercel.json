@@ -4,6 +4,9 @@
     "api/health.js": {
       "maxDuration": 5
     },
+    "api/login.js": {
+      "maxDuration": 10
+    },
     "api/[...path].js": {
       "includeFiles": "backend/src/init.sql",
       "maxDuration": 10
@@ -12,7 +15,7 @@
   "rewrites": [
     {
       "source": "/auth/login",
-      "destination": "/api/auth/login"
+      "destination": "/api/login"
     },
     {
       "source": "/medicacoes",

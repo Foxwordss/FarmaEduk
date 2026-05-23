@@ -55,3 +55,6 @@ netlify.toml
 
 # Vercel files
 .vercel
+
+.vercel
+.env*

@@ -558,7 +558,7 @@
             };
 
             try {
-                const url = medicamentoEmEdicao ? `/api/medicamentos/${medicamentoEmEdicao.id}` : '/medicacoes';
+                const url = medicamentoEmEdicao ? `/api/medicamentos/${medicamentoEmEdicao.id}` : '/api/medicacoes';
                 const resposta = await fetch(url, {
                     method: medicamentoEmEdicao ? 'PUT' : 'POST',
                     headers: {

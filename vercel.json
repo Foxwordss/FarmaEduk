@@ -24,10 +24,6 @@
       "destination": "/api/login"
     },
     {
-      "source": "/medicacoes",
-      "destination": "/api/medicacoes"
-    },
-    {
       "source": "/health",
       "destination": "/api/ping"
     },

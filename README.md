@@ -96,7 +96,10 @@ Resposta esperada:
 
 ```json
 {
-  "status": "ok"
+  "status": "ok",
+  "runtime": "vercel",
+  "hasDatabaseUrl": true,
+  "hasJwtSecret": true
 }
 ```
 

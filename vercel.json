@@ -2,7 +2,8 @@
   "version": 2,
   "functions": {
     "api/[...path].js": {
-      "includeFiles": "backend/src/init.sql"
+      "includeFiles": "backend/src/init.sql",
+      "maxDuration": 10
     }
   },
   "rewrites": [

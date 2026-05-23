@@ -1,7 +1,9 @@
 const loginForm = document.getElementById("loginForm");
 const loginFeedback = document.getElementById("loginFeedback");
 const perfilEsperado = document.body.dataset.loginPerfil || "";
-const destinoLogin = document.body.dataset.loginDestino || "/medicamentos";
+const destinoLogin = perfilEsperado === "admin"
+  ? "/medicamentos"
+  : (document.body.dataset.loginDestino || "/filtros");
 
 async function sendJson(url, data) {
   const controller = new AbortController();
@@ -38,7 +40,7 @@ loginForm.addEventListener("submit", async (event) => {
     sessionStorage.setItem("farmaeduk_autenticado", "true");
     sessionStorage.setItem("farmaeduk_usuario", JSON.stringify(result.usuario));
     sessionStorage.setItem("farmaeduk_token", result.token || "");
-    window.location.href = destinoLogin;
+    window.location.assign(destinoLogin);
   } catch (error) {
     loginFeedback.textContent = error.name === "AbortError" ? "A API demorou para responder. Verifique a Vercel e o banco." : error.message;
   }

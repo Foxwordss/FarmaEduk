@@ -7,6 +7,9 @@
     "api/login.js": {
       "maxDuration": 10
     },
+    "api/db-check.js": {
+      "maxDuration": 10
+    },
     "api/[...path].js": {
       "includeFiles": "backend/src/init.sql",
       "maxDuration": 10

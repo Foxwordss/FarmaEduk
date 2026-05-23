@@ -1,14 +1,18 @@
 let appPromise;
 
 function getPath(req) {
-  const forwardedPath = req.headers['x-forwarded-uri'] || req.url || '';
+  const forwardedPath =
+    req.headers['x-forwarded-uri'] ||
+    req.headers['x-vercel-forwarded-for'] ||
+    req.url ||
+    '';
   return String(forwardedPath).split('?')[0];
 }
 
 export default async function handler(req, res) {
   const pathname = getPath(req);
 
-  if (pathname === '/health' || pathname === '/api/health') {
+  if (pathname === '/health' || pathname === '/api/health' || pathname === '/api') {
     return res.status(200).json({
       status: 'ok',
       runtime: 'vercel',
